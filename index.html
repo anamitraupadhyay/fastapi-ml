@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classifier</title>
+</head>
+<body>
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="uploadImage()">Classify</button>
+    <p id="predictionResult"></p>
+    <script type="text/javascript">
+        async function uploadImage() {
+            const imageInput = document.getElementById('imageInput');
+            if (!imageInput.files.length) {
+                alert('Please select an image');
+                return;
+            }
+            const predictionResult = document.getElementById('predictionResult');
+            const image = imageInput.files[0];
+            const formData = new FormData();
+            formData.append('file', image);
+            try {
+                const response = await fetch('http://localhost:8000/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                predictionResult.innerHTML = `Prediction: ${data.prediction}`;
+            } catch (error) {
+                console.error('Error:', error);
+                predictionResult.innerHTML = 'Error occurred while processing the image.';
+            }
+        }
+    </script>
+</body>
+</html>
